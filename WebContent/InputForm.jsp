@@ -22,7 +22,7 @@
 <option>Other</option>
 </select>
 <br/><br/>
-<tr><td colspan="2"><input type="submit" value="Add User"/></td></tr>
+<tr><td colspan="2"><input type="submit" value="Add Product"/></td></tr>
 </form>
 
 </body>

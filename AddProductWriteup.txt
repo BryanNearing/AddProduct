@@ -1,0 +1,13 @@
+This project was completed and works in the following way
+
+1) The user is directed to the landing page inputForm.jsp
+	The user inputs all of the information in the form and hits the submit button
+	
+2) The program takes the user input and puts it into an object called Product
+
+3) The hibernate program which has been configured to accept Entities called Product 
+and inserts it into the database.
+
+4) When done successfully, the program takes the user to input success to tell the 
+user that the operation was done successfully and puts a link to navigate back to 
+inputForm.jsp to enter in another product.

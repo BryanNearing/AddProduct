@@ -1,0 +1,204 @@
+Product.java
+-----------------------------------------------------
+package com.entity;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
+public class Product {
+	@Id
+	private String name;
+	private String department;
+	private float cost;
+	
+	public Product() {
+		super();
+	}
+
+	public Product(String name, String department, float cost) {
+		super();
+		this.name = name;
+		this.department = department;
+		this.cost = cost;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+
+	public float getCost() {
+		return cost;
+	}
+
+	public void setCost(float cost) {
+		this.cost = cost;
+	}
+}
+
+HibernateUtility.java
+-----------------------------------------------------
+package com.Hibernate;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.AnnotationConfiguration;
+import org.hibernate.cfg.Configuration;
+
+public class HibernateUtility {
+
+	private static SessionFactory sf;
+	
+	static {
+		sf = new AnnotationConfiguration().configure().buildSessionFactory();
+	}
+	
+	public static Session getSession() {
+		Session session = sf.openSession();
+		return session;
+	}		
+}
+
+FormInput.java
+-----------------------------------------------------
+package com.Servlets;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
+import com.Hibernate.*;
+import com.entity.Product;
+
+/**
+ * Servlet implementation class FormInput
+ */
+@WebServlet("/FormInput")
+public class FormInput extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		String name = request.getParameter("name");
+		String department = request.getParameter("department");
+		float cost = Float.parseFloat(request.getParameter("cost"));
+		
+		Session sesh = HibernateUtility.getSession();
+		
+		Transaction tx = sesh.beginTransaction();
+		
+		Product p = new Product(name, department, cost);
+		
+		sesh.save(p);
+		
+		tx.commit();
+		
+		response.sendRedirect("productAddSuccess.jsp");
+	}
+
+}
+
+hibernate.cfg.xml
+-----------------------------------------------------
+<?xml version = "1.0" encoding = "utf-8"?>
+<!DOCTYPE hibernate-configuration SYSTEM 
+"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+   <session-factory>
+   
+      <property name = "hibernate.dialect">
+         org.hibernate.dialect.MySQLDialect
+      </property>
+      
+      <property name = "hibernate.connection.driver_class">
+         com.mysql.jdbc.Driver
+      </property>
+      
+      <!-- Assume test is the database name -->
+      
+      <property name = "hibernate.connection.url">
+         jdbc:mysql://localhost/test
+      </property>
+      
+      <property name = "hibernate.connection.username">
+         admin
+      </property>
+      
+      <property name = "hibernate.connection.password">
+         password
+      </property>
+      
+      <!-- List of XML mapping files -->
+      <mapping class = "com.entity.Product"/>
+      
+   </session-factory>
+</hibernate-configuration>
+
+inputForm.jsp
+-----------------------------------------------------
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Add a Product</title>
+</head>
+<body>
+
+<h1>Add New Product</h1>
+<form action="FormInput" method="post">
+<table>
+<tr><td>Name:</td><td><input type="text" name="name"/></td></tr>
+<tr><td>Cost ($):</td><td><input type="text" name="cost"/></td></tr>
+</table>
+<select name="department" style="width:155px">
+<option>Engineering</option>
+<option>Software</option>
+<option>IT</option>
+<option>SAP</option>
+<option>Other</option>
+</select>
+<br/><br/>
+<tr><td colspan="2"><input type="submit" value="Add Product"/></td></tr>
+</form>
+
+</body>
+</html>
+
+productAddSuccess.jsp
+-----------------------------------------------------
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Successful</title>
+</head>
+<body>
+<h1>You have successfully added a product to the database!</h1>
+<a href="InputForm.jsp">Add another product</a><br/>
+</body>
+</html>
+
